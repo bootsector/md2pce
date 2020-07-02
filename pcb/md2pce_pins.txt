@@ -1,0 +1,12 @@
+D0 - I
+D1 - UP
+D2 - II
+D3 - RIGHT
+D4 - SELECT
+D5 - DOWN
+D6 - START
+B0 - LEFT
+B4 - III
+B5 - IV
+B6 - V
+B7 - VI
