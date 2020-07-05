@@ -24,6 +24,8 @@
 #include "PCE.h"
 #include "Util.h"
 
+static uint16_t _DDRD, _DDRB;
+
 void PCE_Init(void) {
 	// I
 	bit_clear(DDRD, 1 << 0);
@@ -75,19 +77,26 @@ void PCE_Init(void) {
 }
 
 void PCE_SetPadData(AbstractPad_t *padData)  {
-	padData->d_up    ? bit_set(DDRD, 1 << 1) : bit_clear(DDRD, 1 << 1);
-	padData->d_down  ? bit_set(DDRD, 1 << 5) : bit_clear(DDRD, 1 << 5);
-	padData->d_left  ? bit_set(DDRB, 1 << 0) : bit_clear(DDRB, 1 << 0);
-	padData->d_right ? bit_set(DDRD, 1 << 3) : bit_clear(DDRD, 1 << 3);
 
-	padData->start ? bit_set(DDRD, 1 << 6) : bit_clear(DDRD, 1 << 6);
-	padData->back  ? bit_set(DDRD, 1 << 4) : bit_clear(DDRD, 1 << 4);
+	_DDRD = DDRD;
+	_DDRB = DDRB;
 
-	padData->a ? bit_set(DDRD, 1 << 2) : bit_clear(DDRD, 1 << 2);
-	padData->b ? bit_set(DDRD, 1 << 0) : bit_clear(DDRD, 1 << 0);
-	padData->x ? bit_set(DDRB, 1 << 4) : bit_clear(DDRB, 1 << 4);
-	padData->y ? bit_set(DDRB, 1 << 6) : bit_clear(DDRB, 1 << 6);
+	padData->d_up    ? bit_set(_DDRD, 1 << 1) : bit_clear(_DDRD, 1 << 1);
+	padData->d_down  ? bit_set(_DDRD, 1 << 5) : bit_clear(_DDRD, 1 << 5);
+	padData->d_left  ? bit_set(_DDRB, 1 << 0) : bit_clear(_DDRB, 1 << 0);
+	padData->d_right ? bit_set(_DDRD, 1 << 3) : bit_clear(_DDRD, 1 << 3);
 
-	padData->lb ? bit_set(DDRB, 1 << 5) : bit_clear(DDRB, 1 << 5);
-	padData->rb ? bit_set(DDRB, 1 << 7) : bit_clear(DDRB, 1 << 7);
+	padData->start ? bit_set(_DDRD, 1 << 6) : bit_clear(_DDRD, 1 << 6);
+	padData->back  ? bit_set(_DDRD, 1 << 4) : bit_clear(_DDRD, 1 << 4);
+
+	padData->a ? bit_set(_DDRD, 1 << 2) : bit_clear(_DDRD, 1 << 2);
+	padData->b ? bit_set(_DDRD, 1 << 0) : bit_clear(_DDRD, 1 << 0);
+	padData->x ? bit_set(_DDRB, 1 << 4) : bit_clear(_DDRB, 1 << 4);
+	padData->y ? bit_set(_DDRB, 1 << 6) : bit_clear(_DDRB, 1 << 6);
+
+	padData->lb ? bit_set(_DDRB, 1 << 5) : bit_clear(_DDRB, 1 << 5);
+	padData->rb ? bit_set(_DDRB, 1 << 7) : bit_clear(_DDRB, 1 << 7);
+
+	DDRD = _DDRD;
+	DDRB = _DDRB;
 }
