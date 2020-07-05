@@ -1,7 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"path": "firmware"
+		},
+		{
+			"path": "pcb"
 		}
 	]
 }
