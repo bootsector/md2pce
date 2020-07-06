@@ -24,7 +24,7 @@
 #include "PCE.h"
 #include "Util.h"
 
-static uint16_t _DDRD, _DDRB;
+static uint8_t _DDRD, _DDRB;
 
 void PCE_Init(void) {
 	// I
