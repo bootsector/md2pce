@@ -24,7 +24,7 @@
 #include "Util.h"
 
 void Output_Init(void) {
-	xbox_init(true);
+	xbox_init(false);
 	PCE_Init();
 }
 
@@ -56,9 +56,6 @@ static void Output_SetUSBData(AbstractPad_t *padData) {
 }
 
 void Output_SetPadState(AbstractPad_t *padData) {
-
-	xbox_reset_watchdog();
-
 	PCE_SetPadData(padData);
 
 	Output_SetUSBData(padData);
