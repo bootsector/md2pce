@@ -9,3 +9,6 @@
 *.d
 *.o
 *.bin
+*.out
+*.vvp
+*.vcd
