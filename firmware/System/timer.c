@@ -46,7 +46,7 @@ uint32_t timer_millis(void) {
 
 // 1ms timer for a 16Mhz Clock
 ISR(TIMER0_OVF_vect) {
-	TCNT0 = 6;
+	TCNT0 += 6;
 
 	msTicks++;
 }
