@@ -23,8 +23,13 @@
 
 #include "Genesis_In.h"
 #include "Util.h"
+#include "timer.h"
 
 #define DELAY 14
+#define DEBOUNCE_TIME_MS 10
+
+static uint16_t button_data;
+static uint32_t old_pad_read_millis, pad_read_millis;
 
 uint8_t Genesis_In_Init(void) {
 	// DB9P1
@@ -54,6 +59,8 @@ uint8_t Genesis_In_Init(void) {
 	// DB9P9
 	bit_clear(DDRC, 1 << 7);
 	bit_set(PORTC, 1 << 7);
+
+	old_pad_read_millis = pad_read_millis = 0;
 
 	return 1;
 }
@@ -112,9 +119,6 @@ static uint16_t genesis_read(void) {
 		bit_set(PORTE, 1 << 6);
 		_delay_us(DELAY);
 		bit_clear(PORTE, 1 << 6);
-
-		// Delay needed for settling joystick down
-		_delay_ms(2);
 	}
 
 	retval = normalbuttons | (extrabuttons << 8);
@@ -123,7 +127,15 @@ static uint16_t genesis_read(void) {
 }
 
 void Genesis_In_GetPadState(AbstractPad_t *padData) {
-	int button_data = genesis_read();
+	pad_read_millis = timer_millis();
+
+	if((pad_read_millis - old_pad_read_millis) < DEBOUNCE_TIME_MS) {
+		return;
+	}
+
+	old_pad_read_millis = pad_read_millis;
+	
+	button_data = genesis_read();
 
 	padData->d_up = bit_check(button_data, GENESIS_UP);
 	padData->d_down = bit_check(button_data, GENESIS_DOWN);
