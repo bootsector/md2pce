@@ -26,10 +26,11 @@
 #include "timer.h"
 
 #define DELAY 14
-#define DEBOUNCE_TIME_MS 10
+#define SIXBUTTON_DELAY_MS 2
 
 static uint16_t button_data;
 static uint32_t old_pad_read_millis, pad_read_millis;
+static uint8_t sixbuttonpad;
 
 uint8_t Genesis_In_Init(void) {
 	// DB9P1
@@ -61,6 +62,8 @@ uint8_t Genesis_In_Init(void) {
 	bit_set(PORTC, 1 << 7);
 
 	old_pad_read_millis = pad_read_millis = 0;
+	
+	sixbuttonpad = 0;
 
 	return 1;
 }
@@ -70,6 +73,8 @@ static uint16_t genesis_read(void) {
 
 	int extrabuttons = 0;
 	int normalbuttons = 0;
+	
+	sixbuttonpad = 0;
 
 	// Get D-PAD, B, C buttons state
 	bit_set(PORTE, 1 << 6);
@@ -119,6 +124,8 @@ static uint16_t genesis_read(void) {
 		bit_set(PORTE, 1 << 6);
 		_delay_us(DELAY);
 		bit_clear(PORTE, 1 << 6);
+
+		sixbuttonpad = 1;
 	}
 
 	retval = normalbuttons | (extrabuttons << 8);
@@ -129,7 +136,7 @@ static uint16_t genesis_read(void) {
 void Genesis_In_GetPadState(AbstractPad_t *padData) {
 	pad_read_millis = timer_millis();
 
-	if((pad_read_millis - old_pad_read_millis) < DEBOUNCE_TIME_MS) {
+	if(sixbuttonpad && ((pad_read_millis - old_pad_read_millis) < SIXBUTTON_DELAY_MS)) {
 		return;
 	}
 
