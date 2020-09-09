@@ -19,39 +19,34 @@
 */
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
-#include "Input.h"
-#include "Output.h"
-#include "Util.h"
 #include "timer.h"
 
-AbstractPad_t PadData_DB9;
+static volatile uint32_t msTicks;
 
-int main(void) {
+void timer_init(void) {
+	msTicks = 0;
 
-	// Set clock @ 16Mhz
-	CPU_PRESCALE(0);
+	// Timer0 overflow interrupt setup: Prescaler = FCPU/64
+	TCCR0A = 0;
+	TCCR0B |= (1 << CS01) | (1 << CS00);
 
-	// Disable JTAG
-	bit_set(MCUCR, 1 << JTD);
-	bit_set(MCUCR, 1 << JTD);
+	TCNT0 = 6;
 
-	// Reset pad data buffers
-	AbstractPad_ResetBuffer(&PadData_DB9);
+	// Enable Timer0 overflow interrupt:
+	TIMSK0 = (1 << TOIE0);
 
-	// Initialize TG16/PCE and USB interfaces
-	Output_Init();
+	sei();
+}
 
-	// Initialize DB9 interface
-	Input_Init();
+uint32_t timer_millis(void) {
+	return msTicks;
+}
 
-	// Initialize 1ms timer
-	timer_init();
+// 1ms timer for a 16Mhz Clock
+ISR(TIMER0_OVF_vect) {
+	TCNT0 = 6;
 
-	// Main loop
-	for (;;) {
-		Input_GetPadState(&PadData_DB9);
-
-		Output_SetPadState(&PadData_DB9);
-	}
+	msTicks++;
 }

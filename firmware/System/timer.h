@@ -18,40 +18,12 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <avr/io.h>
+#ifndef TIMER_H_
+#define TIMER_H_
 
-#include "Input.h"
-#include "Output.h"
-#include "Util.h"
-#include "timer.h"
+#include <inttypes.h>
 
-AbstractPad_t PadData_DB9;
+void timer_init(void);
+uint32_t timer_millis(void);
 
-int main(void) {
-
-	// Set clock @ 16Mhz
-	CPU_PRESCALE(0);
-
-	// Disable JTAG
-	bit_set(MCUCR, 1 << JTD);
-	bit_set(MCUCR, 1 << JTD);
-
-	// Reset pad data buffers
-	AbstractPad_ResetBuffer(&PadData_DB9);
-
-	// Initialize TG16/PCE and USB interfaces
-	Output_Init();
-
-	// Initialize DB9 interface
-	Input_Init();
-
-	// Initialize 1ms timer
-	timer_init();
-
-	// Main loop
-	for (;;) {
-		Input_GetPadState(&PadData_DB9);
-
-		Output_SetPadState(&PadData_DB9);
-	}
-}
+#endif /* TIMER_H_ */

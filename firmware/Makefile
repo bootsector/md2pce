@@ -24,7 +24,7 @@ OPTIMIZATION = s
 TARGET       = MD2PCE
 SRC          = main.c \
 Output/USB/Descriptors.c Output/USB/XInputPad.c Output/PCE/PCE.c \
-System/AbstractPad.c Output/Output.c Input/Input.c \
+System/AbstractPad.c Output/Output.c Input/Input.c System/timer.c \
 Input/Pads/Genesis_In.c $(LUFA_SRC_USB)
 LUFA_PATH    = ./LUFA
 CC_FLAGS     = -DUSE_LUFA_CONFIG_HEADER -IConfig/ -ISystem/ -IOutput/USB \
