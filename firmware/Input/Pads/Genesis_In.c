@@ -27,10 +27,6 @@
 
 #define DELAY 14
 
-static uint8_t is_genesis_six_button;
-static uint32_t six_button_read_millis;
-static uint16_t button_data;
-
 uint8_t Genesis_In_Init(void) {
 	// DB9P1
 	bit_clear(DDRF, 1 << 6);
@@ -60,10 +56,6 @@ uint8_t Genesis_In_Init(void) {
 	bit_clear(DDRC, 1 << 7);
 	bit_set(PORTC, 1 << 7);
 
-	is_genesis_six_button = 0;
-
-	six_button_read_millis = 0;
-
 	return 1;
 }
 
@@ -72,8 +64,6 @@ static uint16_t genesis_read(void) {
 
 	int extrabuttons = 0;
 	int normalbuttons = 0;
-
-	is_genesis_six_button = 0;
 
 	// Get D-PAD, B, C buttons state
 	bit_set(PORTE, 1 << 6);
@@ -124,8 +114,8 @@ static uint16_t genesis_read(void) {
 		_delay_us(DELAY);
 		bit_clear(PORTE, 1 << 6);
 
-		is_genesis_six_button = 1;
-		six_button_read_millis = timer_millis();
+		// Required delay for settling 6 button controller down
+		_delay_us(500);
 	}
 
 	retval = normalbuttons | (extrabuttons << 8);
@@ -134,15 +124,7 @@ static uint16_t genesis_read(void) {
 }
 
 void Genesis_In_GetPadState(AbstractPad_t *padData) {	
-	
-	// Skip reading if 1ms hasn't passed and we're reading a Sega Genesis 6 button controller
-	if(is_genesis_six_button) {
-		if((timer_millis() - six_button_read_millis) < 1) {
-			return;
-		}
-	}
-	
-	button_data = genesis_read();
+	int button_data = genesis_read();
 
 	padData->d_up = bit_check(button_data, GENESIS_UP);
 	padData->d_down = bit_check(button_data, GENESIS_DOWN);
