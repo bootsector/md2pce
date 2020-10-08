@@ -115,7 +115,7 @@ static uint16_t genesis_read(void) {
 		bit_clear(PORTE, 1 << 6);
 
 		// Required delay for settling 6 button controller down
-		_delay_us(500);
+		_delay_ms(2);
 	}
 
 	retval = normalbuttons | (extrabuttons << 8);

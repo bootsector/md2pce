@@ -40,7 +40,7 @@ module pcesixbutton(
 reg sync_clr, xfer_pipe_clr;
 reg sync_sel, xfer_pipe_sel;
 
-reg mux = 1'b1;
+reg mux = 1'b0;
 
 always @(posedge system_clock) begin
     { sync_clr, xfer_pipe_clr } <= { xfer_pipe_clr, clr };
@@ -48,14 +48,14 @@ always @(posedge system_clock) begin
 end
 
 always @(posedge sync_clr) begin
-    mux <= ~mux;
+    mux <= !mux;
 end
 
 always @(*) begin
     case ({mux, sync_sel})
-        2'b00: d = {i, ii, select, start};
-        2'b01: d = {up, right, down, left};
-        2'b10: d = {iii, iv, v, vi};
+        2'b00: d = {start, select, ii, i};
+        2'b01: d = {left, down, right, up};
+        2'b10: d = {vi, v, iv, iii};
         2'b11: d = {1'b0, 1'b0, 1'b0, 1'b0};
     endcase        
 end 
