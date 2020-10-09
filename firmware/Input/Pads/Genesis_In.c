@@ -27,6 +27,8 @@
 
 #define DELAY 14
 
+static uint8_t six_button_controller;
+
 uint8_t Genesis_In_Init(void) {
 	// DB9P1
 	bit_clear(DDRF, 1 << 6);
@@ -56,6 +58,8 @@ uint8_t Genesis_In_Init(void) {
 	bit_clear(DDRC, 1 << 7);
 	bit_set(PORTC, 1 << 7);
 
+	six_button_controller = 0;
+
 	return 1;
 }
 
@@ -64,6 +68,8 @@ static uint16_t genesis_read(void) {
 
 	int extrabuttons = 0;
 	int normalbuttons = 0;
+
+	six_button_controller = 0;
 
 	// Get D-PAD, B, C buttons state
 	bit_set(PORTE, 1 << 6);
@@ -114,6 +120,8 @@ static uint16_t genesis_read(void) {
 		_delay_us(DELAY);
 		bit_clear(PORTE, 1 << 6);
 
+		six_button_controller = 1;
+
 		// Required delay for settling 6 button controller down
 		_delay_ms(2);
 	}
@@ -131,14 +139,19 @@ void Genesis_In_GetPadState(AbstractPad_t *padData) {
 	padData->d_left = bit_check(button_data, GENESIS_LEFT);
 	padData->d_right = bit_check(button_data, GENESIS_RIGHT);
 
-	padData->x = bit_check(button_data, GENESIS_A);
 	padData->a = bit_check(button_data, GENESIS_B);
 	padData->b = bit_check(button_data, GENESIS_C);
-	padData->lb = bit_check(button_data, GENESIS_X);
-	padData->rb = bit_check(button_data, GENESIS_Z);
-	padData->y = bit_check(button_data, GENESIS_Y);
 	padData->start = bit_check(button_data, GENESIS_START);
-	padData->back = bit_check(button_data, GENESIS_MODE);
+
+	if(six_button_controller) {
+		padData->x = bit_check(button_data, GENESIS_A);
+		padData->lb = bit_check(button_data, GENESIS_X);
+		padData->rb = bit_check(button_data, GENESIS_Z);
+		padData->y = bit_check(button_data, GENESIS_Y);
+		padData->back = bit_check(button_data, GENESIS_MODE);
+	} else {
+		padData->back = bit_check(button_data, GENESIS_A);
+	}
 
 	padData->menu = ((padData->d_up && padData->start) || bit_check(button_data, GENESIS_8BITDO_HOME));
 }

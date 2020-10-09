@@ -40,11 +40,23 @@ module pcesixbutton(
 reg sync_clr, xfer_pipe_clr;
 reg sync_sel, xfer_pipe_sel;
 
+reg combo_r = 1'b0;
+reg combo_r2 = 1'b0;
+reg six_button = 1'b0;
+
 reg mux = 1'b0;
 
 always @(posedge system_clock) begin
     { sync_clr, xfer_pipe_clr } <= { xfer_pipe_clr, clr };
     { sync_sel, xfer_pipe_sel } <= { xfer_pipe_sel, sel };
+
+    // UP + B + C + START toggles mode
+    combo_r <= !up & !i & !ii & !start;
+    combo_r2 <= combo_r;
+    
+    if (~combo_r & combo_r2) begin
+        six_button <= !six_button; // falling edge
+    end
 end
 
 always @(posedge sync_clr) begin
@@ -52,7 +64,7 @@ always @(posedge sync_clr) begin
 end
 
 always @(*) begin
-    case ({mux, sync_sel})
+    case ({six_button ? mux : 1'b0, sync_sel})
         2'b00: d = {start, select, ii, i};
         2'b01: d = {left, down, right, up};
         2'b10: d = {vi, v, iv, iii};
