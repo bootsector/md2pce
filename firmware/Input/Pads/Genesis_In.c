@@ -72,9 +72,6 @@ static uint16_t genesis_read(void) {
 	six_button_controller = 0;
 
 	// Get D-PAD, B, C buttons state
-	bit_set(PORTE, 1 << 6);
-	_delay_us(DELAY);
-
 	normalbuttons |= (!bit_check(PINF, 6) << 0);
 	normalbuttons |= (!bit_check(PINF, 0) << 1);
 	normalbuttons |= (!bit_check(PINF, 1) << 2);
@@ -82,11 +79,13 @@ static uint16_t genesis_read(void) {
 	normalbuttons |= (!bit_check(PINF, 5) << 4);
 	normalbuttons |= (!bit_check(PINC, 7) << 5);
 
+	// 1
 	bit_clear(PORTE, 1 << 6);
 	_delay_us(DELAY);
 
 	// Is using a SEGA Genesis controller, LEFT and RIGHT will be ACTIVE here
 	if(!(!bit_check(PINF, 1) && !bit_check(PINF, 4))) {
+		bit_set(PORTE, 1 << 6);
 		retval = normalbuttons | (extrabuttons << 8);
 		return retval;
 	}
@@ -97,6 +96,14 @@ static uint16_t genesis_read(void) {
 
 	bit_set(PORTE, 1 << 6);
 	_delay_us(DELAY);
+	
+	// 2
+	bit_clear(PORTE, 1 << 6);
+	_delay_us(DELAY);
+	bit_set(PORTE, 1 << 6);
+	_delay_us(DELAY);
+
+	// 3
 	bit_clear(PORTE, 1 << 6);
 	_delay_us(DELAY);
 
@@ -110,6 +117,7 @@ static uint16_t genesis_read(void) {
 		extrabuttons |= (!bit_check(PINF, 1) << 2);
 		extrabuttons |= (!bit_check(PINF, 4) << 3);
 
+		// 4
 		bit_clear(PORTE, 1 << 6);
 		_delay_us(DELAY);
 
@@ -117,14 +125,14 @@ static uint16_t genesis_read(void) {
 		extrabuttons |= ((!bit_check(PINF, 6)) << 4);
 
 		bit_set(PORTE, 1 << 6);
-		_delay_us(DELAY);
-		bit_clear(PORTE, 1 << 6);
 
 		six_button_controller = 1;
 
 		// Required delay for settling 6 button controller down
 		_delay_ms(2);
 	}
+
+	bit_set(PORTE, 1 << 6);
 
 	retval = normalbuttons | (extrabuttons << 8);
 
