@@ -1,6 +1,8 @@
 # MD2PCE - Sega Genesis controller adapter for TG16/PC-Engine and USB!
 (c) Bruno Freitas - 10/2020 - http://www.brunofreitas.com/
 
+This project is Open Source (GPLv3) and Open Hardware (CC BY-SA 4.0)
+
 ![MD2PCE](https://github.com/bootsector/md2pce/blob/master/docs/md2pce-1.jpg)
 
 MD2PCE is an adapter that allows you to connect Sega Genesis controllers to the TurboGrafx16, PC-Engine and also PC via USB (XInput).
