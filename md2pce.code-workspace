@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "verilog"
+		},
+		{
+			"path": "bootloader"
 		}
 	]
 }
